@@ -1,0 +1,165 @@
+{
+ "products": 835,
+ "variants": 7436,
+ "brands": 59,
+ "categories": 29,
+ "in_stock_variants": 2696,
+ "out_of_stock_variants": 4740,
+ "fully_out_of_stock_products": 99,
+ "variants_missing_sku": 7433,
+ "products_with_1_or_0_images": 184,
+ "price_min": 5.99,
+ "price_max": 1599.99,
+ "price_avg": 162.3,
+ "catalog_retail_value_sum_of_variants": 1206866.19,
+ "top_categories": [
+  [
+   "Shirts & Tops",
+   212
+  ],
+  [
+   "Boots",
+   89
+  ],
+  [
+   "Cap",
+   84
+  ],
+  [
+   "Belts",
+   70
+  ],
+  [
+   "Work Boots & Shoes",
+   56
+  ],
+  [
+   "Pants",
+   53
+  ],
+  [
+   "Outerwear",
+   48
+  ],
+  [
+   "Shoes",
+   32
+  ],
+  [
+   "Felt Hat",
+   28
+  ],
+  [
+   "Ankle Boots",
+   28
+  ],
+  [
+   "Belt Buckles",
+   23
+  ],
+  [
+   "Handbags, Wallets & Cases",
+   23
+  ],
+  [
+   "Straw Hat",
+   21
+  ],
+  [
+   "Tie",
+   12
+  ],
+  [
+   "Wallets & Money Clips",
+   9
+  ]
+ ],
+ "top_brands": [
+  [
+   "Cuadra",
+   87
+  ],
+  [
+   "Kimes Ranch",
+   78
+  ],
+  [
+   "Roper",
+   75
+  ],
+  [
+   "Ariat",
+   71
+  ],
+  [
+   "Platini",
+   55
+  ],
+  [
+   "Hooey",
+   49
+  ],
+  [
+   "Cinch",
+   46
+  ],
+  [
+   "Wrangler",
+   38
+  ],
+  [
+   "Durango",
+   34
+  ],
+  [
+   "Justin",
+   24
+  ],
+  [
+   "Milano Hats",
+   23
+  ],
+  [
+   "Caterpillar",
+   20
+  ],
+  [
+   "Nocona",
+   20
+  ],
+  [
+   "Work Zone",
+   18
+  ],
+  [
+   "Twisted X",
+   16
+  ],
+  [
+   "Crumrine",
+   14
+  ],
+  [
+   "Stetson",
+   13
+  ],
+  [
+   "Angel Ranch",
+   12
+  ],
+  [
+   "Corral Boots",
+   11
+  ],
+  [
+   "3D Belt Company",
+   7
+  ]
+ ],
+ "uncategorized_products": [
+  "3D Belt Company Knife Sheath (D8403802)",
+  "3D Belt Company Knife Sheath (D8403908)",
+  "3D Belt Company Knife Sheath (D8402702)",
+  "3D Belt Company Knife Sheath (D8403302)"
+ ]
+}

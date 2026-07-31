@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0908">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="El Herradero">
+<meta name="format-detection" content="telephone=no">
+<title>El Herradero Western Wear | Boots, Hats &amp; Apparel in Phoenix, Arizona</title>
+<meta name="description" content="Western boots, felt and straw hats, belts, buckles and apparel from Cuadra, Ariat, Stetson, Kimes Ranch, Roper and more. 4344 W Indian School Rd, Phoenix, Arizona.">
+<meta property="og:title" content="El Herradero Western Wear">
+<meta property="og:description" content="Boots, hats and western apparel in Phoenix, Arizona.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="./favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="./assets/brand/icon-180.png">
+<meta property="og:url" content="https://www.elherraderophoenix.com/">
+<meta property="og:site_name" content="El Herradero Western Wear">
+<meta property="og:image" content="https://www.elherraderophoenix.com/assets/brand/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="./assets/site.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<main>
+  <!-- HERO: the wall. Real merchandise photography, their own product shots. -->
+  <section class="hero">
+    <div class="hero__wall" id="wall" aria-hidden="true"></div>
+    <div class="hero__in">
+      <p class="eyebrow reveal">Phoenix, Arizona &middot; Indian School Road</p>
+      <h1 class="mega reveal">Boots<br>Hats<br>The Real Thing</h1>
+      <div class="hero__meta reveal">
+        <span><i class="dot"></i><b id="mStyles">&mdash;</b>&nbsp;styles in stock</span>
+        <span><i class="dot"></i><b id="mBrands">&mdash;</b>&nbsp;brands</span>
+        <span><i class="dot"></i>Cuadra &middot; Ariat &middot; Stetson &middot; Kimes Ranch</span>
+      </div>
+      <a class="pill pill--solid reveal" href="./shop.html">Shop the store</a>
+    </div>
+  </section>
+
+  <!-- CATEGORIES: real counts, real product imagery -->
+  <section class="sect" id="categories">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow reveal">Departments</p>
+          <h2 class="sect-title reveal">What we carry</h2>
+        </div>
+        <a class="pill reveal" href="./shop.html">Open</a>
+      </div>
+      <div class="rail" id="catRail"></div>
+    </div>
+  </section>
+
+  <!-- NEW ARRIVALS: real, newest published products -->
+  <section class="sect" id="new">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow reveal">On the floor now</p>
+          <h2 class="sect-title reveal">New arrivals</h2>
+        </div>
+        <a class="pill reveal" href="./shop.html">Open</a>
+      </div>
+      <div class="grid" id="newGrid"></div>
+    </div>
+  </section>
+
+  <!-- VISIT -->
+  <section class="sect" id="visit">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow reveal">Come in</p>
+          <h2 class="sect-title reveal">Visit the store</h2>
+        </div>
+      </div>
+      <div class="visit">
+        <div class="panel reveal">
+          <p class="lede" id="vAddr"></p>
+          <ul class="hours" id="vHours"></ul>
+          <p style="font-size:12px;color:var(--bone-dim);margin:16px 0 24px" id="vNote"></p>
+          <a class="pill pill--solid" id="vCall" href="#">Call the store</a>
+        </div>
+        <a class="panel panel--map reveal" id="vMap" href="#" target="_blank" rel="noopener">
+          <iframe id="vFrame" title="Map to El Herradero Western Wear" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <span class="hint">Tap for directions</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="./assets/app.js"></script>
+<script>
+(function(){
+  EH.initChrome();
+  var C = EH.CONFIG;
+
+  // visit panel, all values from CONFIG
+  document.getElementById('vAddr').textContent =
+    C.address + (C.crossStreets ? ". " + C.crossStreets : "");
+  document.getElementById('vNote').textContent = C.hoursNote;
+  document.getElementById('vHours').innerHTML = C.hours.map(function(h){
+    return '<li><span>'+h[0]+'</span><b>'+h[1]+'</b></li>';
+  }).join('');
+  var call = document.getElementById('vCall');
+  call.href = 'tel:'+C.phoneRaw; call.textContent = 'Call ' + C.phone;
+  var map = document.getElementById('vMap');
+  map.href = C.mapUrl;
+  // never animate anything that fetches: set the iframe once, at final state
+  document.getElementById('vFrame').src = C.mapEmbed;
+
+  EH.loadCatalog().then(function(items){
+    var live = items.filter(function(p){return p.inStock;});
+    document.getElementById('mStyles').textContent = live.length;
+    var brands = {}; items.forEach(function(p){ if(p.brand) brands[p.brand]=1; });
+    document.getElementById('mBrands').textContent = Object.keys(brands).length;
+
+    // ---- hero wall: their own product shots, drifting columns (transform only) ----
+    var pool = live.filter(function(p){return p.imgs[0];});
+    var wall = document.getElementById('wall');
+    var COLS = window.innerWidth < 560 ? 3 : (window.innerWidth < 1000 ? 4 : 6);
+    var html = '';
+    for (var c=0;c<COLS;c++){
+      var picks = [];
+      for (var k=0;k<7;k++){
+        var p = pool[(c*11 + k*7 + 3) % pool.length];
+        if (p) picks.push(p);
+      }
+      picks = picks.concat(picks); // seamless loop
+      html += '<div class="wcol" style="--d:'+(48+c*7)+'s;--o:'+(c%2?'-50%':'0')+'">'+
+        picks.map(function(p){
+          return '<div class="wimg"><img loading="lazy" decoding="async" src="'+EH.img(p.imgs[0],320)+'" alt=""></div>';
+        }).join('')+'</div>';
+    }
+    wall.innerHTML = html;
+
+    // ---- categories: real counts ----
+    var counts = {};
+    items.forEach(function(p){ counts[p.cat] = (counts[p.cat]||0)+1; });
+    var order = Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,9);
+    document.getElementById('catRail').innerHTML = order.map(function(cat){
+      var hero = items.find(function(p){return p.cat===cat && p.inStock && p.imgs[0];})
+              || items.find(function(p){return p.cat===cat && p.imgs[0];});
+      return '<a class="cat" href="./shop.html?c='+encodeURIComponent(cat)+'">'+
+        (hero?'<img loading="lazy" decoding="async" src="'+EH.img(hero.imgs[0],520)+'" alt="'+cat+'">':'')+
+        '<span class="cat__v"></span>'+
+        '<span class="cat__t">'+cat+'<span class="cat__n">'+counts[cat]+' styles</span></span></a>';
+    }).join('');
+
+    // ---- new arrivals: in-stock, first 12 in catalog order ----
+    document.getElementById('newGrid').innerHTML =
+      live.slice(0,12).map(EH.cardHTML).join('');
+
+    EH.reveal();
+  }).catch(function(e){
+    console.error(e);
+    document.getElementById('newGrid').innerHTML =
+      '<p class="empty">Catalog is loading from the store. Refresh in a moment.</p>';
+  });
+})();
+</script>
+
+<style>
+/* hero wall — GPU transform only, pauses for reduced motion */
+.hero__wall{display:flex;gap:8px;padding:8px;opacity:.72}
+.wcol{flex:1;display:flex;flex-direction:column;gap:8px;animation:drift var(--d) linear infinite;transform:translate3d(0,var(--o),0);will-change:transform}
+.wimg{border-radius:14px;overflow:hidden;aspect-ratio:1/1;background:var(--ink-3);flex:0 0 auto}
+.wimg img{width:100%;height:100%;object-fit:cover}
+@keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-50%,0)}}
+@media (prefers-reduced-motion:reduce){.wcol{animation:none}}
+</style>
+
+</body>
+</html>

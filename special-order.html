@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0908">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="El Herradero">
+<meta name="format-detection" content="telephone=no">
+<title>Special order | El Herradero Western Wear</title>
+<meta name="description" content="Order any size we do not have on the floor. We bring it in from the manufacturer and ship it straight to you.">
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&display=swap" rel="stylesheet">
+<meta property="og:title" content="Special order | El Herradero Western Wear">
+<meta property="og:description" content="Order any size we do not have on the floor, shipped from the manufacturer to your door.">
+<meta property="og:type" content="website">
+<link rel="icon" href="./favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="./assets/brand/icon-180.png">
+<meta property="og:url" content="https://www.elherraderophoenix.com/special-order.html">
+<meta property="og:site_name" content="El Herradero Western Wear">
+<meta property="og:image" content="https://www.elherraderophoenix.com/assets/brand/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="./assets/site.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<main>
+  <section class="sect" style="padding-top:clamp(96px,15vh,150px)">
+    <div class="wrap" style="max-width:820px">
+      <p class="eyebrow">Not on the floor</p>
+      <h1 class="sect-title" style="margin-bottom:14px">Special order</h1>
+      <p class="lede" style="margin-bottom:34px">
+        We carry more than we can keep in every size. Anything you pick that is not in
+        stock we bring in from the manufacturer and ship straight to your door.
+      </p>
+
+      <div id="hasItems" hidden>
+        <div class="panel" style="margin-bottom:20px">
+          <h2 class="buy__lbl" style="margin-bottom:16px"><span>Your special-order items</span></h2>
+          <div id="soList"></div>
+          <div class="cart__sum" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--hairline)">
+            <span>Estimated total</span><b id="soTotal">$0</b>
+          </div>
+          <p class="cart__fine" id="soLead"></p>
+        </div>
+
+        <div class="panel">
+          <h2 class="buy__lbl" style="margin-bottom:8px"><span>Send it to the store</span></h2>
+          <p style="font-size:14px;color:var(--bone-dim);line-height:1.6;margin:0 0 20px">
+            Text or call and we confirm the manufacturer lead time and take payment.
+            Nothing is charged until you say go.
+          </p>
+          <div class="so__acts">
+            <a class="pill pill--solid" id="soText" href="#">Text the order</a>
+            <a class="pill" id="soCall" href="#">Call the store</a>
+            <button class="pill" id="soCopy">Copy the list</button>
+          </div>
+          <p class="buy__note" id="soMsg" style="margin-top:14px"></p>
+        </div>
+      </div>
+
+      <div id="noItems" hidden>
+        <p class="empty" style="text-align:left;padding:0 0 26px">
+          You have not picked any special-order items yet. Open a product, choose any size,
+          and sizes we do not stock get added here.
+        </p>
+        <a class="pill pill--solid" href="./shop.html">Browse the shop</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="./assets/app.js"></script>
+<script>
+(function(){
+  EH.initChrome();
+  var C = EH.CONFIG;
+
+  var items = [];
+  try { items = (JSON.parse(localStorage.getItem('eh_cart_v1')) || [])
+        .filter(function(i){ return i.special; }); } catch(e){}
+
+  var has = document.getElementById('hasItems'), none = document.getElementById('noItems');
+  if (!items.length) { none.hidden = false; return; }
+  has.hidden = false;
+
+  document.getElementById('soList').innerHTML = items.map(function(i){
+    return '<div class="crow">'+
+      '<a class="crow__img" href="./product.html?h='+encodeURIComponent(i.handle)+'">'+
+        (i.img?'<img src="'+EH.img(i.img,160)+'" alt="">':'')+'</a>'+
+      '<div class="crow__mid">'+
+        (i.brand?'<span class="crow__b">'+i.brand+'</span>':'')+
+        '<a class="crow__t" href="./product.html?h='+encodeURIComponent(i.handle)+'">'+i.title+'</a>'+
+        (i.variant?'<span class="crow__v">Size '+i.variant+' &middot; qty '+i.qty+'</span>':'')+
+        '<span class="crow__tag crow__tag--sp">Special order</span>'+
+      '</div>'+
+      '<div class="crow__p">'+EH.money(i.price*i.qty)+'</div>'+
+    '</div>';
+  }).join('');
+
+  var total = items.reduce(function(n,i){ return n + i.price*i.qty; }, 0);
+  document.getElementById('soTotal').textContent = EH.money(total);
+  document.getElementById('soLead').textContent = C.leadSpecial;
+
+  // Plain-text order summary. Real data only, no invented order number.
+  var lines = items.map(function(i){
+    return '- ' + i.title + (i.variant ? ' / size ' + i.variant : '') +
+           ' x' + i.qty + ' (' + EH.money(i.price*i.qty) + ')';
+  });
+  var summary = 'Special order request from the El Herradero website:\n' +
+                lines.join('\n') + '\nEstimated total ' + EH.money(total) + '.';
+
+  document.getElementById('soCall').href = 'tel:' + C.phoneRaw;
+  document.getElementById('soText').href =
+    'sms:' + C.phoneRaw + '&body=' + encodeURIComponent(summary);
+
+  document.getElementById('soCopy').onclick = function(){
+    var msg = document.getElementById('soMsg');
+    function ok(){ msg.textContent = 'Copied. Paste it into a text or email to the store.'; }
+    function no(){ msg.textContent = 'Could not copy. Call ' + C.phone + ' and we will take it down.'; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(summary).then(ok).catch(no);
+    } else { no(); }
+  };
+})();
+</script>
+
+<style>
+.so__acts{display:flex;flex-wrap:wrap;gap:10px}
+.so__acts .pill{flex:1 1 auto;min-width:150px}
+@media (max-width:560px){ .so__acts .pill{flex:1 1 100%} }
+</style>
+
+</body>
+</html>

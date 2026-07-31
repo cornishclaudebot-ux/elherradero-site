@@ -1,0 +1,9 @@
+# local verification screenshots, not part of the site
+.shots/
+
+# intermediate build artefacts, regenerable from catalog_raw.json
+data/catalog.min.json
+data/pg_*.json
+data/alt_*.json
+
+.DS_Store

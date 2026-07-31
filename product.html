@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0908">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="El Herradero">
+<meta name="format-detection" content="telephone=no">
+<title>El Herradero Western Wear</title>
+<meta name="description" content="Western boots, hats, belts and apparel at El Herradero Western Wear in Phoenix, Arizona.">
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&display=swap" rel="stylesheet">
+<meta property="og:title" content="El Herradero Western Wear">
+<meta property="og:description" content="Western boots, hats, belts and apparel in Phoenix, Arizona.">
+<meta property="og:type" content="website">
+<link rel="icon" href="./favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="./assets/brand/icon-180.png">
+<meta property="og:url" content="https://www.elherraderophoenix.com/product.html">
+<meta property="og:site_name" content="El Herradero Western Wear">
+<meta property="og:image" content="https://www.elherraderophoenix.com/assets/brand/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="./assets/site.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<main id="main">
+  <div class="pdp" id="pdp" hidden>
+    <nav class="crumbs">
+      <a href="./shop.html">Shop</a>
+      <span>/</span>
+      <a id="cbCat" href="#"></a>
+    </nav>
+
+    <div class="pdp__grid">
+      <!-- gallery -->
+      <div class="gal">
+        <div class="gal__main"><img id="galMain" alt="" decoding="async"></div>
+        <div class="gal__swipe" id="galSwipe" aria-label="Product photos"></div>
+        <div class="gal__thumbs" id="galThumbs"></div>
+      </div>
+
+      <!-- buy box -->
+      <div class="buy">
+        <p class="buy__brand" id="pBrand"></p>
+        <h1 class="buy__title" id="pTitle"></h1>
+        <p class="buy__price" id="pPrice"></p>
+
+        <div id="optWrap" hidden>
+          <div class="buy__lbl"><span id="optName">Size</span><span class="buy__hint" id="optHint"></span></div>
+          <div class="sizes" id="sizes"></div>
+        </div>
+
+        <p class="fulfil" id="fulfil"></p>
+
+        <button class="pill pill--solid buy__cta" id="addBtn">Add to bag</button>
+        <p class="buy__note" id="buyNote"></p>
+
+        <div class="desc" id="desc"></div>
+        <div class="acc" id="acc"></div>
+      </div>
+    </div>
+
+    <section class="sect" id="relSect" hidden style="padding-left:0;padding-right:0">
+      <div class="head">
+        <div>
+          <p class="eyebrow">More like this</p>
+          <h2 class="sect-title" id="relTitle"></h2>
+        </div>
+      </div>
+      <div class="grid" id="relGrid"></div>
+    </section>
+
+    <!-- iOS: thumb-reachable buy bar, revealed once the size grid scrolls past -->
+    <div class="buybar" id="buybar">
+      <span class="buybar__p" id="bbPrice">&nbsp;<span class="buybar__s" id="bbSub"></span></span>
+      <button class="pill pill--solid" id="bbAdd">Add to bag</button>
+    </div>
+  </div>
+
+  <div class="pdp__miss" id="miss" hidden>
+    <h1 class="sect-title">We could not find that item</h1>
+    <p class="lede" style="margin:14px 0 26px">It may have sold out and come off the floor.</p>
+    <a class="pill pill--solid" href="./shop.html">Back to the shop</a>
+  </div>
+</main>
+
+<script src="./assets/app.js"></script>
+<script>
+(function(){
+  EH.initChrome();
+  var handle = new URLSearchParams(location.search).get('h');
+  var pdp = document.getElementById('pdp'), miss = document.getElementById('miss');
+
+  function fail(){ miss.hidden = false; }
+  if (!handle) { fail(); return; }
+
+  fetch('./data/p/' + encodeURIComponent(handle) + '.json')
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(p){
+      pdp.hidden = false;
+      document.title = p.t + ' | El Herradero Western Wear';
+
+      // breadcrumb
+      var cb = document.getElementById('cbCat');
+      cb.textContent = p.c; cb.href = './shop.html?c=' + encodeURIComponent(p.c);
+
+      // gallery
+      var main = document.getElementById('galMain');
+      function show(src){ main.src = EH.img(src, 1100); main.alt = p.t; }
+      if (p.imgs.length) show(p.imgs[0]);
+      var shots = p.imgs.slice(0,8);
+      document.getElementById('galThumbs').innerHTML = shots.map(function(s,i){
+        return '<button class="th'+(i===0?' on':'')+'" data-s="'+s+'" data-i="'+i+'"'+
+               ' aria-label="Photo '+(i+1)+'">'+
+               '<img src="'+EH.img(s,180)+'" alt="" loading="lazy" decoding="async"></button>';
+      }).join('');
+
+      // Phone: real swipeable carousel. Same images, no extra requests beyond sizes.
+      var swipe = document.getElementById('galSwipe');
+      swipe.innerHTML = shots.map(function(s,i){
+        return '<img src="'+EH.img(s,900)+'" alt="'+(i===0?p.t.replace(/"/g,'&quot;'):'')+'"'+
+               (i?' loading="lazy"':'')+' decoding="async">';
+      }).join('');
+
+      function markDot(i){
+        document.querySelectorAll('.th').forEach(function(x){
+          x.classList.toggle('on', Number(x.dataset.i) === i);
+        });
+      }
+      document.querySelectorAll('.th').forEach(function(b){
+        b.onclick = function(){
+          var i = Number(b.dataset.i);
+          markDot(i); show(b.dataset.s);
+          // on phones the dots also drive the carousel
+          var target = swipe.children[i];
+          if (target && swipe.clientWidth) {
+            swipe.scrollTo({left: target.offsetLeft - swipe.offsetLeft, behavior: 'smooth'});
+          }
+        };
+      });
+      // keep dots in sync with the swipe position
+      var sTick;
+      swipe.addEventListener('scroll', function(){
+        clearTimeout(sTick);
+        sTick = setTimeout(function(){
+          if (!swipe.clientWidth) return;
+          markDot(Math.round(swipe.scrollLeft / swipe.clientWidth));
+        }, 90);
+      }, {passive:true});
+
+      // header
+      document.getElementById('pBrand').textContent = p.b || p.c;
+      document.getElementById('pTitle').textContent = p.t;
+
+      var live = p.vars.filter(function(v){return v.a;});
+      var prices = p.vars.map(function(v){return v.p;});
+      var lo = Math.min.apply(null, prices), hi = Math.max.apply(null, prices);
+      document.getElementById('pPrice').textContent =
+        lo === hi ? EH.money(lo) : EH.money(lo) + ' - ' + EH.money(hi);
+
+      // options
+      var chosen = null;
+      var real = p.vars.filter(function(v){
+        return v.n && v.n !== 'Default Title' && v.n !== 'Default';
+      });
+      var addBtn = document.getElementById('addBtn');
+      var note = document.getElementById('buyNote');
+
+      var fulfil = document.getElementById('fulfil');
+
+      function setFulfil(){
+        if (!chosen) {
+          fulfil.textContent = live.length
+            ? 'Every size is orderable. Pick one to see its delivery time.'
+            : 'Every size here is a special order.';
+          fulfil.className = 'fulfil';
+          return;
+        }
+        fulfil.textContent = chosen.a ? EH.CONFIG.leadInStock : EH.CONFIG.leadSpecial;
+        fulfil.className = 'fulfil' + (chosen.a ? ' fulfil--now' : ' fulfil--sp');
+      }
+
+      if (real.length) {
+        document.getElementById('optWrap').hidden = false;
+        document.getElementById('optName').textContent = (p.opt && p.opt[0]) ? p.opt[0] : 'Size';
+        // ALL sizes stay open. Out-of-stock becomes a special order, never a dead end.
+        document.getElementById('sizes').innerHTML = p.vars.map(function(v){
+          return '<button class="sz'+(v.a?'':' sp')+'" data-id="'+v.id+'">'+
+                 (v.n||'').replace(/"/g,'&quot;')+
+                 (v.a?'':'<i class="sz__d" aria-hidden="true"></i>')+
+                 '</button>';
+        }).join('');
+        document.querySelectorAll('.sz').forEach(function(b){
+          b.onclick = function(){
+            document.querySelectorAll('.sz').forEach(function(x){x.classList.remove('on');});
+            b.classList.add('on');
+            chosen = p.vars.filter(function(v){return v.id===Number(b.dataset.id);})[0];
+            document.getElementById('pPrice').textContent = EH.money(chosen.p);
+            note.textContent = '';
+            setFulfil();
+          };
+        });
+        document.getElementById('optHint').textContent =
+          live.length + ' of ' + p.vars.length + ' on the floor, rest by special order';
+      } else if (p.vars.length === 1) {
+        chosen = p.vars[0];
+      }
+      setFulfil();
+
+      function doAdd(){
+        if (!chosen) {
+          note.textContent = 'Pick a ' +
+            ((p.opt && p.opt[0]) ? p.opt[0].toLowerCase() : 'size') + ' first.';
+          // on phones the size grid may be off screen, take them to it
+          var w = document.getElementById('optWrap');
+          if (w && !w.hidden && window.matchMedia('(max-width:640px)').matches) {
+            w.scrollIntoView({behavior:'smooth', block:'center'});
+          }
+          return;
+        }
+        EH.cartAdd({
+          vid: chosen.id, qty: 1, title: p.t, brand: p.b,
+          variant: chosen.n, price: chosen.p,
+          img: p.imgs[0] || '', handle: p.h,
+          special: !chosen.a
+        });
+      }
+      addBtn.onclick = doAdd;
+      document.getElementById('bbAdd').onclick = doAdd;
+
+      // sticky buy bar mirrors the buy box
+      var bar = document.getElementById('buybar');
+      var bbPrice = document.getElementById('bbPrice');
+      var bbSub = document.getElementById('bbSub');
+      function syncBar(){
+        bbPrice.firstChild.nodeValue = document.getElementById('pPrice').textContent;
+        var sub = '';
+        if (chosen) {
+          if (chosen.n && chosen.n !== 'Default Title' && chosen.n !== 'Default') {
+            sub = 'Size ' + chosen.n + ' · ';
+          }
+          sub += chosen.a ? 'In stock' : 'Special order';
+        } else if (real.length) {
+          sub = 'Choose a size';
+        }
+        bbSub.textContent = sub;
+      }
+      syncBar();
+      document.querySelectorAll('.sz').forEach(function(b){
+        b.addEventListener('click', syncBar);
+      });
+      // Reveal the bar once the price scrolls above the viewport top. A plain
+      // rAF-throttled scroll check, because IntersectionObserver only fires on
+      // state CHANGES and an instant jump from below-viewport to above-viewport
+      // is the same not-intersecting state, so it never fires.
+      // No rAF throttle: rAF starves in backgrounded tabs and a stuck flag then
+      // blocks every later check. One getBoundingClientRect per scroll is cheap.
+      var priceEl = document.getElementById('pPrice');
+      function barCheck(){
+        bar.classList.toggle('up', priceEl.getBoundingClientRect().top < 0);
+      }
+      window.addEventListener('scroll', barCheck, {passive:true});
+      barCheck();
+
+      // Description sits on the page, open, not behind a click.
+      if (p.d) {
+        var lines = p.d.split('\n')
+          .map(function(l){ return l.trim(); })
+          .filter(function(l){ return l && l.toLowerCase() !== 'details'; });
+        var headline = '';
+        // Many of these start with an all-caps marketing line, promote it.
+        if (lines.length && lines[0] === lines[0].toUpperCase() && lines[0].length < 90) {
+          headline = lines.shift();
+        }
+        document.getElementById('desc').innerHTML =
+          (headline ? '<p class="desc__h">'+headline+'</p>' : '') +
+          lines.map(function(l){
+            return l.charAt(0) === '-'
+              ? '<li>'+l.slice(1).trim()+'</li>'
+              : '<p>'+l+'</p>';
+          }).join('').replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+      }
+
+      // remaining detail blocks
+      var blocks = [];
+      var meta = [];
+      if (p.b) meta.push('Brand: ' + p.b);
+      if (p.c) meta.push('Department: ' + p.c);
+      var skus = p.vars.map(function(v){return v.sku;}).filter(Boolean);
+      if (skus.length) meta.push('SKU: ' + skus.join(', '));
+      if (meta.length) blocks.push(['Specs', meta.join('\n')]);
+      blocks.push(['Sizes and availability',
+        live.length + ' of ' + p.vars.length + ' sizes are on the floor in ' +
+          EH.CONFIG.city + '.\n' +
+        'Any size you do not see in stock can still be ordered. We bring it in from the ' +
+        'manufacturer and ship it straight to you.\n' +
+        'In stock: ' + (live.map(function(v){return v.n;}).join(', ') || 'none right now') + '.']);
+      blocks.push(['Try it on', 'Come by ' + EH.CONFIG.address +
+        '. Call ' + EH.CONFIG.phone + ' and we can hold your size.']);
+      document.getElementById('acc').innerHTML = blocks.map(function(b){
+        return '<details><summary>'+b[0]+'</summary><div>'+
+               b[1].split('\n').map(function(l){return '<p>'+l+'</p>';}).join('')+
+               '</div></details>';
+      }).join('');
+
+      // related, from our own catalog
+      if (p.rel && p.rel.length) {
+        EH.loadCatalog().then(function(items){
+          var byHandle = {};
+          items.forEach(function(x){ byHandle[x.handle] = x; });
+          var rel = p.rel.map(function(h){return byHandle[h];}).filter(Boolean).slice(0,8);
+          if (!rel.length) return;
+          document.getElementById('relSect').hidden = false;
+          document.getElementById('relTitle').textContent = p.c;
+          document.getElementById('relGrid').innerHTML = rel.map(EH.cardHTML).join('');
+        });
+      }
+    })
+    .catch(function(e){ console.error(e); fail(); });
+})();
+</script>
+</body>
+</html>

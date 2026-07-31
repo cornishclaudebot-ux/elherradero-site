@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0908">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="El Herradero">
+<meta name="format-detection" content="telephone=no">
+<title>Shop All | El Herradero Western Wear</title>
+<meta name="description" content="Every style El Herradero Western Wear carries: boots, hats, belts, buckles, shirts, jeans and work boots from 59 brands.">
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&display=swap" rel="stylesheet">
+<meta property="og:title" content="Shop All | El Herradero Western Wear">
+<meta property="og:description" content="Every style we carry: boots, hats, belts, buckles, shirts and jeans from 59 brands.">
+<meta property="og:type" content="website">
+<link rel="icon" href="./favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="./assets/brand/icon-180.png">
+<meta property="og:url" content="https://www.elherraderophoenix.com/shop.html">
+<meta property="og:site_name" content="El Herradero Western Wear">
+<meta property="og:image" content="https://www.elherraderophoenix.com/assets/brand/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="./assets/site.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<main>
+  <section class="sect" style="padding-top:clamp(96px,15vh,150px)">
+    <div class="wrap">
+      <p class="eyebrow">The floor</p>
+      <h1 class="sect-title" style="margin-bottom:26px">Shop all</h1>
+
+      <div class="tools">
+        <label class="field">
+          <span id="icSearch"></span>
+          <input id="q" type="search" placeholder="Search boots, brands, styles" autocomplete="off">
+        </label>
+        <label class="field" style="flex:0 1 190px">
+          <select id="cat"><option value="">All departments</option></select>
+          <span id="icC1"></span>
+        </label>
+        <label class="field" style="flex:0 1 175px">
+          <select id="brand"><option value="">All brands</option></select>
+          <span id="icC2"></span>
+        </label>
+        <label class="field" style="flex:0 1 165px">
+          <select id="sort">
+            <option value="feat">In stock first</option>
+            <option value="lo">Price: low to high</option>
+            <option value="hi">Price: high to low</option>
+            <option value="az">Name: A to Z</option>
+          </select>
+          <span id="icC3"></span>
+        </label>
+        <span class="count" id="count"></span>
+      </div>
+
+      <div class="grid" id="grid"></div>
+      <div class="more" id="moreWrap" hidden><button class="pill" id="more">Show more</button></div>
+      <div id="empty" hidden><p class="empty">Nothing matches that search yet. Try a brand name like Cuadra or Ariat.</p></div>
+    </div>
+  </section>
+</main>
+
+<script src="./assets/app.js"></script>
+<script>
+(function(){
+  EH.initChrome();
+  document.getElementById('icSearch').innerHTML = EH.ICON.search;
+  ['icC1','icC2','icC3'].forEach(function(id){ document.getElementById(id).innerHTML = EH.ICON.chev; });
+
+  var ALL = [], view = [], shown = 0, PAGE = 48;
+  var q = document.getElementById('q'), cat = document.getElementById('cat'),
+      brand = document.getElementById('brand'), sort = document.getElementById('sort'),
+      grid = document.getElementById('grid'), count = document.getElementById('count'),
+      moreWrap = document.getElementById('moreWrap'), empty = document.getElementById('empty');
+
+  function render(reset){
+    if (reset){ grid.innerHTML=''; shown=0; }
+    var next = view.slice(shown, shown+PAGE);
+    grid.insertAdjacentHTML('beforeend', next.map(EH.cardHTML).join(''));
+    shown += next.length;
+    count.textContent = view.length + (view.length===1?' style':' styles');
+    moreWrap.hidden = shown >= view.length;
+    empty.hidden = view.length > 0;
+  }
+
+  function apply(){
+    var term = q.value.trim().toLowerCase(),
+        c = cat.value, b = brand.value, s = sort.value;
+    view = ALL.filter(function(p){
+      if (c && p.cat !== c) return false;
+      if (b && p.brand !== b) return false;
+      if (term){
+        var hay = (p.title+' '+p.brand+' '+p.cat).toLowerCase();
+        if (hay.indexOf(term) === -1) return false;
+      }
+      return true;
+    });
+    if (s==='lo') view.sort(function(a,b2){return a.price-b2.price;});
+    else if (s==='hi') view.sort(function(a,b2){return b2.price-a.price;});
+    else if (s==='az') view.sort(function(a,b2){return a.title.localeCompare(b2.title);});
+    else view.sort(function(a,b2){
+      if (a.inStock!==b2.inStock) return a.inStock?-1:1;
+      return a.title.localeCompare(b2.title);
+    });
+    render(true);
+  }
+
+  function debounce(fn,ms){var t;return function(){clearTimeout(t);t=setTimeout(fn,ms);};}
+  q.addEventListener('input', debounce(apply,140));
+  [cat,brand,sort].forEach(function(el){ el.addEventListener('change', apply); });
+  document.getElementById('more').onclick = function(){ render(false); };
+
+  EH.loadCatalog().then(function(items){
+    ALL = items;
+    var cats={}, brands={};
+    items.forEach(function(p){
+      cats[p.cat]=(cats[p.cat]||0)+1;
+      if(p.brand) brands[p.brand]=(brands[p.brand]||0)+1;
+    });
+    Object.keys(cats).sort(function(a,b){return cats[b]-cats[a];}).forEach(function(k){
+      cat.insertAdjacentHTML('beforeend','<option value="'+k.replace(/"/g,'&quot;')+'">'+k+' ('+cats[k]+')</option>');
+    });
+    Object.keys(brands).sort(function(a,b){return brands[b]-brands[a];}).forEach(function(k){
+      brand.insertAdjacentHTML('beforeend','<option value="'+k.replace(/"/g,'&quot;')+'">'+k+' ('+brands[k]+')</option>');
+    });
+    // deep link: shop.html?c=Boots
+    var pre = new URLSearchParams(location.search).get('c');
+    if (pre) cat.value = pre;
+    apply();
+  }).catch(function(e){
+    console.error(e);
+    grid.innerHTML = '<p class="empty">Could not load the catalog. Refresh to try again.</p>';
+  });
+})();
+</script>
+</body>
+</html>
