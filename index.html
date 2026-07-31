@@ -36,11 +36,6 @@
     <div class="hero__in">
       <p class="eyebrow reveal">Phoenix, Arizona &middot; Indian School Road</p>
       <h1 class="mega reveal">Boots<br>Hats<br>The Real Thing</h1>
-      <div class="hero__meta reveal">
-        <span><i class="dot"></i><b id="mStyles">&mdash;</b>&nbsp;styles in stock</span>
-        <span><i class="dot"></i><b id="mBrands">&mdash;</b>&nbsp;brands</span>
-        <span><i class="dot"></i>Cuadra &middot; Ariat &middot; Stetson &middot; Kimes Ranch</span>
-      </div>
       <a class="pill pill--solid reveal" href="./shop.html">Shop the store</a>
     </div>
   </section>
@@ -120,9 +115,6 @@
 
   EH.loadCatalog().then(function(items){
     var live = items.filter(function(p){return p.inStock;});
-    document.getElementById('mStyles').textContent = live.length;
-    var brands = {}; items.forEach(function(p){ if(p.brand) brands[p.brand]=1; });
-    document.getElementById('mBrands').textContent = Object.keys(brands).length;
 
     // ---- hero wall: their own product shots, drifting columns (transform only) ----
     var pool = live.filter(function(p){return p.imgs[0];});
