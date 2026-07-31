@@ -1,6 +1,14 @@
 # El Herradero Western Wear — site rebuild + full catalog extract
 
-Built 2026-07-29. Status: **DRAFT, launch-ready, nothing published.**
+Built 2026-07-29. **LIVE for review at
+https://cornishclaudebot-ux.github.io/elherradero-site/**
+
+This is a preview URL on Aiden's GitHub, not a public launch. It is not on any El Herradero
+domain, is not linked from anywhere, and is not indexed. Read the checkout warning in
+"Two stores" below before pointing a real domain at it or sharing it with customers.
+
+Repo: https://github.com/cornishclaudebot-ux/elherradero-site (GitHub Pages, `main`, root).
+To redeploy: commit and push to `main`, Pages rebuilds in about 40 seconds.
 
 ## Run it
 
